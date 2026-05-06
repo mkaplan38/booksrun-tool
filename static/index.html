@@ -10,10 +10,8 @@
   body { font-family: 'Georgia', serif; background: #0f1117; color: #e8e0d0; min-height: 100vh; padding: 28px 24px; }
   h1 { font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: #c8a96e; margin-bottom: 4px; }
   .subtitle { font-size: 12px; color: #555; letter-spacing: 1px; margin-bottom: 28px; }
-
   .panel { background: #1a1d26; border: 1px solid #2e3244; border-radius: 10px; padding: 20px 22px; margin-bottom: 20px; }
   .panel-title { font-size: 11px; color: #888; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
-
   .cond-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
   .cond-tab { padding: 8px 22px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: all 0.18s; user-select: none; }
   .tab-new { background: #1a2e4e; color: #7eb3e8; }
@@ -22,12 +20,10 @@
   .tab-vg.active { border-color: #c8a96e; }
   .tab-both { background: #1e3a1e; color: #7ec87e; }
   .tab-both.active { border-color: #7ec87e; }
-
   .controls { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field label { font-size: 11px; color: #888; letter-spacing: 1px; text-transform: uppercase; }
   select { background: #0f1117; border: 1px solid #2e3244; color: #e8e0d0; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; }
-
   .btn { padding: 9px 22px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; letter-spacing: 1px; transition: all 0.18s; }
   .btn-primary { background: #c8a96e; color: #0f1117; }
   .btn-primary:hover { background: #e0bf80; }
@@ -42,19 +38,15 @@
   .btn-xlsx-all:hover { background: #285a28; }
   .btn-isbn { background: transparent; color: #aaa; border: 1px solid #2e3244; }
   .btn-isbn:hover { background: #2e324422; }
-
   .progress-wrap { display: none; }
   .progress-label { font-size: 12px; color: #999; margin-bottom: 6px; }
   .progress-bar-bg { background: #2e3244; border-radius: 4px; height: 6px; overflow: hidden; }
   .progress-bar-fill { background: #c8a96e; height: 100%; border-radius: 4px; transition: width 0.3s; width: 0%; }
-
   .stats { display: flex; gap: 10px; flex-wrap: wrap; }
   .stat { background: #0f1117; border: 1px solid #2e3244; border-radius: 8px; padding: 10px 16px; min-width: 100px; }
   .stat-val { font-size: 22px; font-weight: bold; color: #c8a96e; }
   .stat-lbl { font-size: 10px; color: #555; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
-
   .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
   .table-wrap { max-height: 500px; overflow-y: auto; border-radius: 8px; border: 1px solid #2e3244; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; padding: 10px 12px; background: #1a1d26; color: #c8a96e; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #2e3244; position: sticky; top: 0; z-index: 5; }
@@ -64,11 +56,11 @@
   .price { color: #7ec87e; font-weight: bold; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; display: inline-block; }
   .badge-new { background: #1a2e4e; color: #7eb3e8; }
-  .badge-vg { background: #3a2e10; color: #c8a96e; }
+  .badge-vg  { background: #3a2e10; color: #c8a96e; }
   .link-out { color: #c8a96e; text-decoration: none; font-size: 12px; }
   .link-out:hover { text-decoration: underline; }
   .empty { text-align: center; padding: 40px; color: #555; font-size: 14px; }
-  .error-box { background: #2a1a1a; border: 1px solid #8b3a3a; border-radius: 8px; padding: 12px 16px; color: #e07070; font-size: 13px; display: none; }
+  .error-box { background: #2a1a1a; border: 1px solid #8b3a3a; border-radius: 8px; padding: 12px 16px; color: #e07070; font-size: 13px; display: none; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -76,7 +68,6 @@
 <h1>📚 BooksRun eBay Fetcher</h1>
 <p class="subtitle">BooksRun eBay mağazasından en son eklenen kitapları çeker</p>
 
-<!-- Kondisyon -->
 <div class="panel">
   <div class="panel-title">Kondisyon Seçin</div>
   <div class="cond-tabs">
@@ -86,7 +77,6 @@
   </div>
 </div>
 
-<!-- Kontroller -->
 <div class="panel">
   <div class="panel-title">Ayarlar</div>
   <div class="controls">
@@ -103,9 +93,9 @@
     <div class="field">
       <label>Sıralama</label>
       <select id="sortOrder">
-        <option value="StartTimeNewest">En Yeni Eklenen</option>
-        <option value="PricePlusShippingLowest">En Düşük Fiyat</option>
-        <option value="PricePlusShippingHighest">En Yüksek Fiyat</option>
+        <option value="newlyListed">En Yeni Eklenen</option>
+        <option value="price">En Düşük Fiyat</option>
+        <option value="-price">En Yüksek Fiyat</option>
       </select>
     </div>
     <button class="btn btn-primary" id="fetchBtn" onclick="startFetch()">🔍 Kitapları Çek</button>
@@ -113,16 +103,13 @@
   </div>
 </div>
 
-<!-- Hata -->
 <div class="error-box" id="errorBox"></div>
 
-<!-- İlerleme -->
 <div class="panel progress-wrap" id="progressPanel">
   <div class="progress-label" id="progressLabel">Başlatılıyor...</div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
 </div>
 
-<!-- İstatistik -->
 <div class="panel" id="statsPanel" style="display:none;">
   <div class="panel-title">Sonuçlar</div>
   <div class="stats">
@@ -134,29 +121,21 @@
   </div>
 </div>
 
-<!-- Aksiyonlar -->
 <div class="panel actions" id="actionsPanel" style="display:none;">
   <button class="btn btn-xlsx-new" id="btnNew" onclick="exportXLSX('new')" style="display:none;">⬇️ New — Excel</button>
-  <button class="btn btn-xlsx-vg" id="btnVG" onclick="exportXLSX('vg')" style="display:none;">⬇️ Very Good — Excel</button>
+  <button class="btn btn-xlsx-vg"  id="btnVG"  onclick="exportXLSX('vg')"  style="display:none;">⬇️ Very Good — Excel</button>
   <button class="btn btn-xlsx-all" id="btnAll" onclick="exportXLSX('all')" style="display:none;">⬇️ Tümü — Excel</button>
   <button class="btn btn-isbn" onclick="copyISBN('all')">📋 Tüm ISBN Kopyala</button>
   <button class="btn btn-isbn" id="btnISBNNew" onclick="copyISBN('new')" style="display:none;">📋 New ISBN</button>
-  <button class="btn btn-isbn" id="btnISBNVG" onclick="copyISBN('vg')" style="display:none;">📋 Very Good ISBN</button>
+  <button class="btn btn-isbn" id="btnISBNVG"  onclick="copyISBN('vg')"  style="display:none;">📋 Very Good ISBN</button>
 </div>
 
-<!-- Tablo -->
 <div class="panel" id="tablePanel" style="display:none; padding:0; overflow:hidden;">
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>#</th>
-          <th>Başlık</th>
-          <th>ISBN</th>
-          <th>Fiyat</th>
-          <th>Kondisyon</th>
-          <th>Tarih</th>
-          <th>Link</th>
+          <th>#</th><th>Başlık</th><th>ISBN</th><th>Fiyat</th><th>Kondisyon</th><th>Tarih</th><th>Link</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -176,12 +155,12 @@ function selectCond(c) {
   document.getElementById('tab-' + c).classList.add('active');
 }
 
-function isNew(cond) { return cond.toLowerCase().includes('new') && !cond.toLowerCase().includes('very'); }
-function isVG(cond) { return cond.toLowerCase().includes('very good'); }
+function isNew(c) { return (c||'').toLowerCase().includes('new'); }
+function isVG(c)  { return (c||'').toLowerCase().includes('very good') || (c||'').toLowerCase().includes('good'); }
 
 function filterBooks(type) {
   if (type === 'new') return allBooks.filter(b => isNew(b.condition));
-  if (type === 'vg') return allBooks.filter(b => isVG(b.condition));
+  if (type === 'vg')  return allBooks.filter(b => isVG(b.condition) && !isNew(b.condition));
   return allBooks;
 }
 
@@ -197,7 +176,6 @@ function showError(msg) {
   b.style.display = 'block';
 }
 function hideError() { document.getElementById('errorBox').style.display = 'none'; }
-
 function stopFetch() { shouldStop = true; }
 
 async function startFetch() {
@@ -212,24 +190,27 @@ async function startFetch() {
   document.getElementById('stopBtn').style.display = '';
 
   const target = parseInt(document.getElementById('totalCount').value);
-  const sort = document.getElementById('sortOrder').value;
-  const maxPages = Math.min(Math.ceil(target / 100), 100);
+  const sort   = document.getElementById('sortOrder').value;
+  const pageSize = 200;
+  let offset = 0;
+  let totalAvail = Infinity;
 
   try {
-    for (let page = 1; page <= maxPages; page++) {
-      if (shouldStop) break;
-      const pct = (page / maxPages) * 100;
-      setProgress(`Sayfa ${page}/${maxPages} çekiliyor... (${allBooks.length} kitap bulundu)`, pct);
+    while (allBooks.length < target && offset < totalAvail && !shouldStop) {
+      const pct = totalAvail === Infinity ? 10 : Math.min((allBooks.length / target) * 100, 95);
+      setProgress(`${allBooks.length.toLocaleString()} / ${target.toLocaleString()} kitap çekiliyor...`, pct);
 
-      const res = await fetch(`/api/fetch?page=${page}&sort=${sort}&cond=${selectedCond}`);
+      const res  = await fetch(`/api/fetch?offset=${offset}&sort=${sort}&cond=${selectedCond}`);
       const data = await res.json();
 
       if (!data.success) { showError(data.error || 'Bilinmeyen hata'); break; }
-      if (!data.items.length) break;
+      if (!data.items || !data.items.length) break;
 
+      totalAvail = data.total || Infinity;
       allBooks.push(...data.items);
-      if (allBooks.length >= target) break;
-      await new Promise(r => setTimeout(r, 150));
+      offset += pageSize;
+
+      await new Promise(r => setTimeout(r, 200));
     }
 
     allBooks = allBooks.slice(0, target);
@@ -249,25 +230,24 @@ async function startFetch() {
 }
 
 function renderStats() {
-  const newBooks = filterBooks('new');
-  const vgBooks = filterBooks('vg');
-  const avg = allBooks.length ? (allBooks.reduce((s,b)=>s+b.price,0)/allBooks.length).toFixed(2) : 0;
-  document.getElementById('sTot').textContent = allBooks.length.toLocaleString();
+  const newB = filterBooks('new');
+  const vgB  = filterBooks('vg');
+  const avg  = allBooks.length ? (allBooks.reduce((s,b)=>s+b.price,0)/allBooks.length).toFixed(2) : 0;
+  document.getElementById('sTot').textContent  = allBooks.length.toLocaleString();
   document.getElementById('sISBN').textContent = allBooks.filter(b=>b.isbn).length.toLocaleString();
-  document.getElementById('sNew').textContent = newBooks.length.toLocaleString();
-  document.getElementById('sVG').textContent = vgBooks.length.toLocaleString();
-  document.getElementById('sAvg').textContent = '$' + avg;
+  document.getElementById('sNew').textContent  = newB.length.toLocaleString();
+  document.getElementById('sVG').textContent   = vgB.length.toLocaleString();
+  document.getElementById('sAvg').textContent  = '$' + avg;
 }
 
 function renderActions() {
-  const hasNew = filterBooks('new').length > 0;
-  const hasVG = filterBooks('vg').length > 0;
-  const hasBoth = hasNew && hasVG;
-  document.getElementById('btnNew').style.display = hasNew ? '' : 'none';
-  document.getElementById('btnVG').style.display = hasVG ? '' : 'none';
-  document.getElementById('btnAll').style.display = hasBoth ? '' : 'none';
+  const hasNew  = filterBooks('new').length > 0;
+  const hasVG   = filterBooks('vg').length  > 0;
+  document.getElementById('btnNew').style.display     = hasNew ? '' : 'none';
+  document.getElementById('btnVG').style.display      = hasVG  ? '' : 'none';
+  document.getElementById('btnAll').style.display     = (hasNew && hasVG) ? '' : 'none';
   document.getElementById('btnISBNNew').style.display = hasNew ? '' : 'none';
-  document.getElementById('btnISBNVG').style.display = hasVG ? '' : 'none';
+  document.getElementById('btnISBNVG').style.display  = hasVG  ? '' : 'none';
 }
 
 function renderTable() {
@@ -278,16 +258,16 @@ function renderTable() {
     return;
   }
   allBooks.forEach((b, i) => {
-    const badgeClass = isNew(b.condition) ? 'badge-new' : 'badge-vg';
+    const newItem = isNew(b.condition);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="color:#444;font-size:11px;">${i+1}</td>
-      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;" title="${b.title.replace(/"/g,'&quot;')}">${b.title}</td>
+      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;" title="${(b.title||'').replace(/"/g,'&quot;')}">${b.title||''}</td>
       <td class="isbn">${b.isbn || '<span style="color:#333">—</span>'}</td>
-      <td class="price">$${b.price.toFixed(2)}</td>
-      <td><span class="badge ${badgeClass}">${b.condition}</span></td>
-      <td style="font-size:11px;color:#666;">${b.date}</td>
-      <td><a class="link-out" href="${b.url}" target="_blank">↗ eBay</a></td>
+      <td class="price">$${(b.price||0).toFixed(2)}</td>
+      <td><span class="badge ${newItem?'badge-new':'badge-vg'}">${b.condition||'-'}</span></td>
+      <td style="font-size:11px;color:#666;">${b.date||''}</td>
+      <td><a class="link-out" href="${b.url||'#'}" target="_blank">↗ eBay</a></td>
     `;
     tbody.appendChild(tr);
   });
@@ -296,49 +276,37 @@ function renderTable() {
 function exportXLSX(type) {
   const books = filterBooks(type);
   if (!books.length) return;
-  const label = type === 'new' ? 'New' : type === 'vg' ? 'VeryGood' : 'Tumu';
+  const label = type==='new'?'New':type==='vg'?'VeryGood':'Tumu';
   const wb = XLSX.utils.book_new();
-
-  const makeSheet = (rows) => {
+  const mkSheet = rows => {
     const data = [['#','Başlık','ISBN','Fiyat ($)','Kondisyon','Eklenme Tarihi','eBay Linki']];
-    rows.forEach((b,i) => data.push([i+1, b.title, b.isbn||'', b.price, b.condition, b.date, b.url]));
+    rows.forEach((b,i) => data.push([i+1,b.title,b.isbn||'',b.price,b.condition,b.date,b.url]));
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws['!cols'] = [{wch:5},{wch:52},{wch:14},{wch:10},{wch:14},{wch:14},{wch:55}];
     return ws;
   };
-
-  XLSX.utils.book_append_sheet(wb, makeSheet(books), label === 'Tumu' ? 'Tümü' : label);
-  if (type === 'all') {
-    XLSX.utils.book_append_sheet(wb, makeSheet(filterBooks('new')), 'New');
-    XLSX.utils.book_append_sheet(wb, makeSheet(filterBooks('vg')), 'Very Good');
+  XLSX.utils.book_append_sheet(wb, mkSheet(books), label==='Tumu'?'Tümü':label);
+  if (type==='all') {
+    XLSX.utils.book_append_sheet(wb, mkSheet(filterBooks('new')), 'New');
+    XLSX.utils.book_append_sheet(wb, mkSheet(filterBooks('vg')), 'Very Good');
   }
-
-  // Özet sayfası
-  const newC = filterBooks('new').length;
-  const vgC = filterBooks('vg').length;
-  const avg = books.length ? (books.reduce((s,b)=>s+b.price,0)/books.length).toFixed(2) : 0;
-  const summary = [
+  const s2 = XLSX.utils.aoa_to_sheet([
     ['Rapor Tarihi', new Date().toLocaleDateString('tr-TR')],
-    ['Toplam Kitap', books.length],
+    ['Toplam', books.length],
     ["ISBN'li", books.filter(b=>b.isbn).length],
-    ['New', newC],
-    ['Very Good', vgC],
-    ['Ortalama Fiyat ($)', +avg],
-  ];
-  const ws2 = XLSX.utils.aoa_to_sheet(summary);
-  ws2['!cols'] = [{wch:22},{wch:16}];
-  XLSX.utils.book_append_sheet(wb, ws2, 'Özet');
-
-  const tarih = new Date().toISOString().split('T')[0];
-  XLSX.writeFile(wb, `booksrun_${label}_${tarih}.xlsx`);
+    ['New', filterBooks('new').length],
+    ['Very Good', filterBooks('vg').length],
+    ['Ort. Fiyat ($)', +(books.reduce((s,b)=>s+b.price,0)/books.length).toFixed(2)],
+  ]);
+  s2['!cols'] = [{wch:22},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, s2, 'Özet');
+  XLSX.writeFile(wb, `booksrun_${label}_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
 function copyISBN(type) {
   const books = filterBooks(type);
   const isbns = books.filter(b=>b.isbn).map(b=>b.isbn).join('\n');
-  navigator.clipboard.writeText(isbns).then(() => {
-    alert(`✅ ${books.filter(b=>b.isbn).length} ISBN kopyalandı!`);
-  });
+  navigator.clipboard.writeText(isbns).then(() => alert(`✅ ${books.filter(b=>b.isbn).length} ISBN kopyalandı!`));
 }
 </script>
 </body>
