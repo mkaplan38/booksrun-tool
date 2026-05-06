@@ -19,13 +19,14 @@ def fetch_books():
     cond = request.args.get('cond', 'both')  # new, vg, both
 
     params = {
-        'OPERATION-NAME': 'findItemsIneBayStores',
+        'OPERATION-NAME': 'findItemsAdvanced',
         'SERVICE-VERSION': '1.0.0',
         'SECURITY-APPNAME': APP_ID,
         'RESPONSE-DATA-FORMAT': 'JSON',
-        'storeName': 'booksrun',
         'categoryId': '267',
         'sortOrder': sort,
+        'itemFilter(0).name': 'Seller',
+        'itemFilter(0).value': 'booksrun',
         'paginationInput.pageNumber': page,
         'paginationInput.entriesPerPage': 100,
     }
@@ -33,9 +34,8 @@ def fetch_books():
     try:
         resp = requests.get(EBAY_URL, params=params, timeout=15)
         data = resp.json()
-        items = data.get('findItemsIneBayStoresResponse', [{}])[0] \
-                    .get('searchResult', [{}])[0] \
-                    .get('item', [])
+        root = data.get('findItemsAdvancedResponse', [{}])[0]
+        items = root.get('searchResult', [{}])[0].get('item', [])
 
         results = []
         for item in items:
@@ -74,14 +74,15 @@ def fetch_books():
                 'date': date[:10] if date else ''
             })
 
-        total_pages = data.get('findItemsIneBayStoresResponse', [{}])[0] \
-                          .get('paginationOutput', [{}])[0] \
-                          .get('totalPages', ['1'])[0]
+        total_pages = int(
+            root.get('paginationOutput', [{}])[0]
+                .get('totalPages', ['1'])[0]
+        )
 
         return jsonify({
             'success': True,
             'items': results,
-            'total_pages': int(total_pages),
+            'total_pages': total_pages,
             'page': page
         })
 
