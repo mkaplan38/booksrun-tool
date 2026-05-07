@@ -3,308 +3,448 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BooksRun eBay Fetcher</title>
+<title>Book Fetcher</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Georgia', serif; background: #0f1117; color: #e8e0d0; min-height: 100vh; padding: 28px 24px; }
-  h1 { font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: #c8a96e; margin-bottom: 4px; }
-  .subtitle { font-size: 12px; color: #555; letter-spacing: 1px; margin-bottom: 28px; }
-  .panel { background: #1a1d26; border: 1px solid #2e3244; border-radius: 10px; padding: 20px 22px; margin-bottom: 20px; }
-  .panel-title { font-size: 11px; color: #888; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
-  .cond-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-  .cond-tab { padding: 8px 22px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: all 0.18s; user-select: none; }
-  .tab-new { background: #1a2e4e; color: #7eb3e8; }
-  .tab-new.active { border-color: #7eb3e8; }
-  .tab-vg { background: #3a2e10; color: #c8a96e; }
-  .tab-vg.active { border-color: #c8a96e; }
-  .tab-both { background: #1e3a1e; color: #7ec87e; }
-  .tab-both.active { border-color: #7ec87e; }
-  .controls { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
-  .field { display: flex; flex-direction: column; gap: 5px; }
-  .field label { font-size: 11px; color: #888; letter-spacing: 1px; text-transform: uppercase; }
-  select { background: #0f1117; border: 1px solid #2e3244; color: #e8e0d0; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; }
-  .btn { padding: 9px 22px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; letter-spacing: 1px; transition: all 0.18s; }
-  .btn-primary { background: #c8a96e; color: #0f1117; }
-  .btn-primary:hover { background: #e0bf80; }
-  .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
-  .btn-stop { background: transparent; color: #e07070; border: 1px solid #e07070; }
-  .btn-stop:hover { background: #e0707018; }
-  .btn-xlsx-new { background: #1a2e4e; color: #7eb3e8; }
-  .btn-xlsx-new:hover { background: #1e3860; }
-  .btn-xlsx-vg { background: #3a2e10; color: #c8a96e; }
-  .btn-xlsx-vg:hover { background: #4a3e18; }
-  .btn-xlsx-all { background: #1e3a1e; color: #7ec87e; }
-  .btn-xlsx-all:hover { background: #285a28; }
-  .btn-isbn { background: transparent; color: #aaa; border: 1px solid #2e3244; }
-  .btn-isbn:hover { background: #2e324422; }
-  .progress-wrap { display: none; }
-  .progress-label { font-size: 12px; color: #999; margin-bottom: 6px; }
-  .progress-bar-bg { background: #2e3244; border-radius: 4px; height: 6px; overflow: hidden; }
-  .progress-bar-fill { background: #c8a96e; height: 100%; border-radius: 4px; transition: width 0.3s; width: 0%; }
-  .stats { display: flex; gap: 10px; flex-wrap: wrap; }
-  .stat { background: #0f1117; border: 1px solid #2e3244; border-radius: 8px; padding: 10px 16px; min-width: 100px; }
-  .stat-val { font-size: 22px; font-weight: bold; color: #c8a96e; }
-  .stat-lbl { font-size: 10px; color: #555; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
-  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .table-wrap { max-height: 500px; overflow-y: auto; border-radius: 8px; border: 1px solid #2e3244; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 10px 12px; background: #1a1d26; color: #c8a96e; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #2e3244; position: sticky; top: 0; z-index: 5; }
-  td { padding: 8px 12px; border-bottom: 1px solid #1a1d26; color: #ccc; vertical-align: middle; }
-  tr:hover td { background: #1a1d2666; }
-  .isbn { font-family: monospace; color: #c8a96e; font-size: 12px; }
-  .price { color: #7ec87e; font-weight: bold; }
-  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; display: inline-block; }
-  .badge-new { background: #1a2e4e; color: #7eb3e8; }
-  .badge-vg  { background: #3a2e10; color: #c8a96e; }
-  .link-out { color: #c8a96e; text-decoration: none; font-size: 12px; }
-  .link-out:hover { text-decoration: underline; }
-  .empty { text-align: center; padding: 40px; color: #555; font-size: 14px; }
-  .error-box { background: #2a1a1a; border: 1px solid #8b3a3a; border-radius: 8px; padding: 12px 16px; color: #e07070; font-size: 13px; display: none; margin-bottom: 16px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; background: #0f1117; color: #e8e0d0; min-height: 100vh; padding: 24px; }
+h1 { font-size: 20px; letter-spacing: 2px; text-transform: uppercase; color: #c8a96e; margin-bottom: 4px; }
+.subtitle { font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 24px; }
+
+/* Mağaza sekmeleri */
+.store-tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid #2e3244; }
+.store-tab { padding: 10px 28px; font-size: 13px; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.18s; color: #666; letter-spacing: 1px; }
+.store-tab.active-br { color: #c8a96e; border-bottom-color: #c8a96e; }
+.store-tab.active-bw { color: #7eb3e8; border-bottom-color: #7eb3e8; }
+.store-tab:hover { color: #e8e0d0; }
+
+.store-panel { display: none; padding-top: 20px; }
+.store-panel.active { display: block; }
+
+.panel { background: #1a1d26; border: 1px solid #2e3244; border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; }
+.panel-title { font-size: 10px; color: #888; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+
+/* Kondisyon butonları */
+.cond-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.cond-tab { padding: 7px 18px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: all 0.18s; user-select: none; }
+.tab-new    { background: #1a2e4e; color: #7eb3e8; }
+.tab-new.active    { border-color: #7eb3e8; }
+.tab-vg     { background: #3a2e10; color: #c8a96e; }
+.tab-vg.active     { border-color: #c8a96e; }
+.tab-ln     { background: #1e3a2e; color: #7ec8a8; }
+.tab-ln.active     { border-color: #7ec8a8; }
+.tab-both   { background: #1e3a1e; color: #7ec87e; }
+.tab-both.active   { border-color: #7ec87e; }
+
+/* Saat butonları */
+.hour-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.hour-tab { padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: all 0.18s; background: #0f1117; color: #888; user-select: none; }
+.hour-tab.active { border-color: #c8a96e; color: #c8a96e; }
+
+/* Kontroller */
+.controls-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 10px; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+input[type=number] { background: #0f1117; border: 1px solid #2e3244; color: #e8e0d0; padding: 7px 10px; border-radius: 6px; font-size: 13px; width: 90px; }
+input[type=number]:focus { outline: none; border-color: #c8a96e; }
+
+.btn { padding: 8px 20px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; border: none; letter-spacing: 1px; transition: all 0.18s; }
+.btn-primary { background: #c8a96e; color: #0f1117; }
+.btn-primary:hover { background: #e0bf80; }
+.btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
+.btn-stop { background: transparent; color: #e07070; border: 1px solid #e07070; font-size: 12px; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+.btn-stop:hover { background: #e0707018; }
+.btn-xlsx { background: #1e3a1e; color: #7ec87e; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+.btn-xlsx:hover { background: #285a28; }
+.btn-isbn { background: transparent; color: #aaa; border: 1px solid #2e3244; padding: 8px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+.btn-isbn:hover { background: #2e324422; }
+
+/* Progress */
+.progress-wrap { display: none; background: #1a1d26; border: 1px solid #2e3244; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+.progress-label { font-size: 12px; color: #999; margin-bottom: 6px; }
+.progress-bar-bg { background: #2e3244; border-radius: 4px; height: 5px; overflow: hidden; }
+.progress-bar-fill { background: #c8a96e; height: 100%; border-radius: 4px; transition: width 0.3s; width: 0%; }
+
+/* Stats */
+.stats { display: flex; gap: 8px; flex-wrap: wrap; }
+.stat { background: #0f1117; border: 1px solid #2e3244; border-radius: 8px; padding: 9px 14px; min-width: 90px; }
+.stat-val { font-size: 20px; font-weight: bold; color: #c8a96e; }
+.stat-lbl { font-size: 9px; color: #555; margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Actions */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Tablo */
+.table-wrap { max-height: 460px; overflow-y: auto; border-radius: 8px; border: 1px solid #2e3244; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 9px 11px; background: #1a1d26; color: #c8a96e; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #2e3244; position: sticky; top: 0; z-index: 5; }
+td { padding: 7px 11px; border-bottom: 1px solid #1a1d26; color: #ccc; vertical-align: middle; }
+tr:hover td { background: #1a1d2666; }
+.isbn { font-family: monospace; color: #c8a96e; font-size: 11px; }
+.price { color: #7ec87e; font-weight: bold; }
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; display: inline-block; }
+.badge-new { background: #1a2e4e; color: #7eb3e8; }
+.badge-vg  { background: #3a2e10; color: #c8a96e; }
+.badge-ln  { background: #1e3a2e; color: #7ec8a8; }
+.link-out { color: #c8a96e; text-decoration: none; font-size: 11px; }
+.link-out:hover { text-decoration: underline; }
+.empty { text-align: center; padding: 36px; color: #555; }
+.error-box { background: #2a1a1a; border: 1px solid #8b3a3a; border-radius: 8px; padding: 11px 15px; color: #e07070; font-size: 12px; margin-bottom: 14px; display: none; }
+.divider { border: none; border-top: 1px solid #2e3244; margin: 14px 0; }
 </style>
 </head>
 <body>
 
-<h1>📚 BooksRun eBay Fetcher</h1>
-<p class="subtitle">BooksRun eBay mağazasından en son eklenen kitapları çeker</p>
+<h1>📚 Book Fetcher</h1>
+<p class="subtitle">eBay'den en son eklenen kitapları çeker — BooksRun & BetterWorldBooks</p>
 
-<div class="panel">
-  <div class="panel-title">Kondisyon Seçin</div>
-  <div class="cond-tabs">
-    <div class="cond-tab tab-new" id="tab-new" onclick="selectCond('new')">🔵 Sadece New</div>
-    <div class="cond-tab tab-vg active" id="tab-vg" onclick="selectCond('vg')">🟡 Sadece Very Good</div>
-    <div class="cond-tab tab-both" id="tab-both" onclick="selectCond('both')">🟢 İkisi Birden</div>
-  </div>
+<!-- Mağaza Sekmeleri -->
+<div class="store-tabs">
+  <div class="store-tab active-br" id="tab-br" onclick="switchStore('br')">📗 BooksRun</div>
+  <div class="store-tab" id="tab-bw" onclick="switchStore('bw')">📘 BetterWorldBooks</div>
 </div>
 
-<div class="panel">
-  <div class="panel-title">Ayarlar</div>
-  <div class="controls">
-    <div class="field">
-      <label>Kitap Sayısı</label>
-      <select id="totalCount">
-        <option value="500">500</option>
-        <option value="1000">1.000</option>
-        <option value="2000">2.000</option>
-        <option value="5000" selected>5.000</option>
-        <option value="10000">10.000</option>
-      </select>
+<!-- ===== BOOKSRUN PANELİ ===== -->
+<div class="store-panel active" id="panel-br">
+
+  <div class="panel">
+    <div class="panel-title">Kondisyon</div>
+    <div class="cond-tabs">
+      <div class="cond-tab tab-new"  id="br-tab-new"  onclick="setCond('br','new')">🔵 New</div>
+      <div class="cond-tab tab-vg active"  id="br-tab-vg"   onclick="setCond('br','vg')">🟡 Very Good</div>
+      <div class="cond-tab tab-both" id="br-tab-both" onclick="setCond('br','both')">🟢 İkisi Birden</div>
     </div>
-    <div class="field">
-      <label>Sıralama</label>
-      <select id="sortOrder">
-        <option value="newlyListed">En Yeni Eklenen</option>
-        <option value="price">En Düşük Fiyat</option>
-        <option value="-price">En Yüksek Fiyat</option>
-      </select>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Zaman Filtresi</div>
+    <div class="hour-tabs">
+      <div class="hour-tab active" id="br-hour-0"  onclick="setHours('br', 0)">⏱ Tümü</div>
+      <div class="hour-tab"        id="br-hour-24" onclick="setHours('br', 24)">Son 24 Saat</div>
+      <div class="hour-tab"        id="br-hour-48" onclick="setHours('br', 48)">Son 48 Saat</div>
     </div>
-    <button class="btn btn-primary" id="fetchBtn" onclick="startFetch()">🔍 Kitapları Çek</button>
-    <button class="btn btn-stop" id="stopBtn" onclick="stopFetch()" style="display:none;">⏹ Durdur</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Fiyat Aralığı & Çekim</div>
+    <div class="controls-row">
+      <div class="field">
+        <label>Min Fiyat ($)</label>
+        <input type="number" id="br-price-min" min="0" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Max Fiyat ($)</label>
+        <input type="number" id="br-price-max" min="0" placeholder="999">
+      </div>
+      <button class="btn btn-primary" id="br-fetchBtn" onclick="startFetch('br')">🔍 Kitapları Çek</button>
+      <button class="btn-stop" id="br-stopBtn" onclick="stopFetch('br')" style="display:none;">⏹ Durdur</button>
+    </div>
+  </div>
+
+  <div class="error-box" id="br-errorBox"></div>
+  <div class="progress-wrap" id="br-progressPanel">
+    <div class="progress-label" id="br-progressLabel">Başlatılıyor...</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="br-progressFill"></div></div>
+  </div>
+
+  <div class="panel" id="br-statsPanel" style="display:none;">
+    <div class="panel-title">BooksRun Sonuçları</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="br-sTot">0</div><div class="stat-lbl">Toplam</div></div>
+      <div class="stat"><div class="stat-val" id="br-sISBN">0</div><div class="stat-lbl">ISBN'li</div></div>
+      <div class="stat"><div class="stat-val" id="br-sNew">0</div><div class="stat-lbl">New</div></div>
+      <div class="stat"><div class="stat-val" id="br-sVG">0</div><div class="stat-lbl">Very Good</div></div>
+      <div class="stat"><div class="stat-val" id="br-sAvg">$0</div><div class="stat-lbl">Ort. Fiyat</div></div>
+    </div>
+  </div>
+
+  <div class="panel actions" id="br-actionsPanel" style="display:none;">
+    <button class="btn-xlsx" onclick="exportXLSX('br','all')">⬇️ Excel İndir</button>
+    <button class="btn-isbn" onclick="copyISBN('br','all')">📋 Tüm ISBN</button>
+    <button class="btn-isbn" id="br-btnISBNNew" onclick="copyISBN('br','new')" style="display:none;">📋 New ISBN</button>
+    <button class="btn-isbn" id="br-btnISBNVG"  onclick="copyISBN('br','vg')"  style="display:none;">📋 VG ISBN</button>
+  </div>
+
+  <div class="panel" id="br-tablePanel" style="display:none; padding:0; overflow:hidden;">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Başlık</th><th>ISBN</th><th>Fiyat</th><th>Kondisyon</th><th>Tarih</th><th>Link</th></tr></thead>
+        <tbody id="br-tableBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
-<div class="error-box" id="errorBox"></div>
+<!-- ===== BETTERWORLDBOOKS PANELİ ===== -->
+<div class="store-panel" id="panel-bw">
 
-<div class="panel progress-wrap" id="progressPanel">
-  <div class="progress-label" id="progressLabel">Başlatılıyor...</div>
-  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
-</div>
-
-<div class="panel" id="statsPanel" style="display:none;">
-  <div class="panel-title">Sonuçlar</div>
-  <div class="stats">
-    <div class="stat"><div class="stat-val" id="sTot">0</div><div class="stat-lbl">Toplam</div></div>
-    <div class="stat"><div class="stat-val" id="sISBN">0</div><div class="stat-lbl">ISBN'li</div></div>
-    <div class="stat"><div class="stat-val" id="sNew">0</div><div class="stat-lbl">New</div></div>
-    <div class="stat"><div class="stat-val" id="sVG">0</div><div class="stat-lbl">Very Good</div></div>
-    <div class="stat"><div class="stat-val" id="sAvg">$0</div><div class="stat-lbl">Ort. Fiyat</div></div>
+  <div class="panel">
+    <div class="panel-title">Kondisyon</div>
+    <div class="cond-tabs">
+      <div class="cond-tab tab-ln active" id="bw-tab-likenew" onclick="setCond('bw','likenew')">🟢 Like New</div>
+      <div class="cond-tab tab-vg"        id="bw-tab-vg"      onclick="setCond('bw','vg')">🟡 Very Good</div>
+      <div class="cond-tab tab-both"      id="bw-tab-all"     onclick="setCond('bw','all')">🔵 İkisi Birden</div>
+    </div>
   </div>
-</div>
 
-<div class="panel actions" id="actionsPanel" style="display:none;">
-  <button class="btn btn-xlsx-new" id="btnNew" onclick="exportXLSX('new')" style="display:none;">⬇️ New — Excel</button>
-  <button class="btn btn-xlsx-vg"  id="btnVG"  onclick="exportXLSX('vg')"  style="display:none;">⬇️ Very Good — Excel</button>
-  <button class="btn btn-xlsx-all" id="btnAll" onclick="exportXLSX('all')" style="display:none;">⬇️ Tümü — Excel</button>
-  <button class="btn btn-isbn" onclick="copyISBN('all')">📋 Tüm ISBN Kopyala</button>
-  <button class="btn btn-isbn" id="btnISBNNew" onclick="copyISBN('new')" style="display:none;">📋 New ISBN</button>
-  <button class="btn btn-isbn" id="btnISBNVG"  onclick="copyISBN('vg')"  style="display:none;">📋 Very Good ISBN</button>
-</div>
+  <div class="panel">
+    <div class="panel-title">Zaman Filtresi</div>
+    <div class="hour-tabs">
+      <div class="hour-tab active" id="bw-hour-0"  onclick="setHours('bw', 0)">⏱ Tümü</div>
+      <div class="hour-tab"        id="bw-hour-24" onclick="setHours('bw', 24)">Son 24 Saat</div>
+      <div class="hour-tab"        id="bw-hour-48" onclick="setHours('bw', 48)">Son 48 Saat</div>
+    </div>
+  </div>
 
-<div class="panel" id="tablePanel" style="display:none; padding:0; overflow:hidden;">
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th><th>Başlık</th><th>ISBN</th><th>Fiyat</th><th>Kondisyon</th><th>Tarih</th><th>Link</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+  <div class="panel">
+    <div class="panel-title">Fiyat Aralığı & Çekim</div>
+    <div class="controls-row">
+      <div class="field">
+        <label>Min Fiyat ($)</label>
+        <input type="number" id="bw-price-min" min="0" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Max Fiyat ($)</label>
+        <input type="number" id="bw-price-max" min="0" placeholder="999">
+      </div>
+      <button class="btn btn-primary" id="bw-fetchBtn" onclick="startFetch('bw')">🔍 Kitapları Çek</button>
+      <button class="btn-stop" id="bw-stopBtn" onclick="stopFetch('bw')" style="display:none;">⏹ Durdur</button>
+    </div>
+  </div>
+
+  <div class="error-box" id="bw-errorBox"></div>
+  <div class="progress-wrap" id="bw-progressPanel">
+    <div class="progress-label" id="bw-progressLabel">Başlatılıyor...</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="bw-progressFill"></div></div>
+  </div>
+
+  <div class="panel" id="bw-statsPanel" style="display:none;">
+    <div class="panel-title">BetterWorldBooks Sonuçları</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="bw-sTot">0</div><div class="stat-lbl">Toplam</div></div>
+      <div class="stat"><div class="stat-val" id="bw-sISBN">0</div><div class="stat-lbl">ISBN'li</div></div>
+      <div class="stat"><div class="stat-val" id="bw-sLN">0</div><div class="stat-lbl">Like New</div></div>
+      <div class="stat"><div class="stat-val" id="bw-sVG">0</div><div class="stat-lbl">Very Good</div></div>
+      <div class="stat"><div class="stat-val" id="bw-sAvg">$0</div><div class="stat-lbl">Ort. Fiyat</div></div>
+    </div>
+  </div>
+
+  <div class="panel actions" id="bw-actionsPanel" style="display:none;">
+    <button class="btn-xlsx" onclick="exportXLSX('bw','all')">⬇️ Excel İndir</button>
+    <button class="btn-isbn" onclick="copyISBN('bw','all')">📋 Tüm ISBN</button>
+  </div>
+
+  <div class="panel" id="bw-tablePanel" style="display:none; padding:0; overflow:hidden;">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Başlık</th><th>ISBN</th><th>Fiyat</th><th>Kondisyon</th><th>Tarih</th><th>Link</th></tr></thead>
+        <tbody id="bw-tableBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <script>
-let allBooks = [];
-let selectedCond = 'vg';
-let fetching = false;
-let shouldStop = false;
+// State
+const state = {
+  br: { cond: 'vg', hours: 0, books: [], fetching: false, stop: false },
+  bw: { cond: 'likenew', hours: 0, books: [], fetching: false, stop: false }
+};
 
-function selectCond(c) {
-  selectedCond = c;
-  document.querySelectorAll('.cond-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + c).classList.add('active');
+const SELLERS = { br: 'booksrun', bw: 'betterworldbooks' };
+
+function switchStore(s) {
+  document.querySelectorAll('.store-tab').forEach(t => t.classList.remove('active-br','active-bw'));
+  document.querySelectorAll('.store-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + s).classList.add(s === 'br' ? 'active-br' : 'active-bw');
+  document.getElementById('panel-' + s).classList.add('active');
 }
 
-function isNew(c) { return (c||'').toLowerCase().includes('new'); }
-function isVG(c)  { return (c||'').toLowerCase().includes('very good') || (c||'').toLowerCase().includes('good'); }
-
-function filterBooks(type) {
-  if (type === 'new') return allBooks.filter(b => isNew(b.condition));
-  if (type === 'vg')  return allBooks.filter(b => isVG(b.condition) && !isNew(b.condition));
-  return allBooks;
+function setCond(s, c) {
+  state[s].cond = c;
+  const prefix = s + '-tab-';
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(t => t.classList.remove('active'));
+  document.getElementById(prefix + c).classList.add('active');
 }
 
-function setProgress(text, pct) {
-  document.getElementById('progressPanel').style.display = 'block';
-  document.getElementById('progressLabel').textContent = text;
-  document.getElementById('progressFill').style.width = Math.min(pct, 100) + '%';
+function setHours(s, h) {
+  state[s].hours = h;
+  document.querySelectorAll(`[id^="${s}-hour-"]`).forEach(t => t.classList.remove('active'));
+  document.getElementById(`${s}-hour-${h}`).classList.add('active');
 }
 
-function showError(msg) {
-  const b = document.getElementById('errorBox');
-  b.textContent = '⚠️ ' + msg;
-  b.style.display = 'block';
+function stopFetch(s) { state[s].stop = true; }
+
+function setProgress(s, text, pct) {
+  document.getElementById(s + '-progressPanel').style.display = 'block';
+  document.getElementById(s + '-progressLabel').textContent = text;
+  document.getElementById(s + '-progressFill').style.width = Math.min(pct, 100) + '%';
 }
-function hideError() { document.getElementById('errorBox').style.display = 'none'; }
-function stopFetch() { shouldStop = true; }
 
-async function startFetch() {
-  if (fetching) return;
-  fetching = true;
-  shouldStop = false;
-  allBooks = [];
-  hideError();
-  ['statsPanel','actionsPanel','tablePanel'].forEach(id => document.getElementById(id).style.display = 'none');
-  document.getElementById('tableBody').innerHTML = '';
-  document.getElementById('fetchBtn').disabled = true;
-  document.getElementById('stopBtn').style.display = '';
+function showError(s, msg) {
+  const b = document.getElementById(s + '-errorBox');
+  b.textContent = '⚠️ ' + msg; b.style.display = 'block';
+}
+function hideError(s) { document.getElementById(s + '-errorBox').style.display = 'none'; }
 
-  const target = parseInt(document.getElementById('totalCount').value);
-  const sort   = document.getElementById('sortOrder').value;
-  const pageSize = 200;
+function badgeClass(cond) {
+  const c = (cond||'').toLowerCase();
+  if (c.includes('like new') || c.includes('like-new')) return 'badge-ln';
+  if (c.includes('new')) return 'badge-new';
+  return 'badge-vg';
+}
+
+async function startFetch(s) {
+  if (state[s].fetching) return;
+  state[s].fetching = true;
+  state[s].stop = false;
+  state[s].books = [];
+  hideError(s);
+  ['statsPanel','actionsPanel','tablePanel'].forEach(id => document.getElementById(`${s}-${id}`).style.display = 'none');
+  document.getElementById(`${s}-tableBody`).innerHTML = '';
+  document.getElementById(`${s}-fetchBtn`).disabled = true;
+  document.getElementById(`${s}-stopBtn`).style.display = '';
+
+  const seller   = SELLERS[s];
+  const cond     = state[s].cond;
+  const hours    = state[s].hours;
+  const priceMin = document.getElementById(`${s}-price-min`).value;
+  const priceMax = document.getElementById(`${s}-price-max`).value;
+
   let offset = 0;
   let totalAvail = Infinity;
+  const PAGE = 200;
 
   try {
-    while (allBooks.length < target && offset < totalAvail && !shouldStop) {
-      const pct = totalAvail === Infinity ? 10 : Math.min((allBooks.length / target) * 100, 95);
-      setProgress(`${allBooks.length.toLocaleString()} / ${target.toLocaleString()} kitap çekiliyor...`, pct);
+    while (!state[s].stop) {
+      const fetched = state[s].books.length;
+      const pct = totalAvail === Infinity ? 15 : Math.min((fetched / Math.min(totalAvail, 10000)) * 100, 95);
+      setProgress(s, `${fetched.toLocaleString()} kitap çekildi${totalAvail !== Infinity ? ' / ' + Math.min(totalAvail,10000).toLocaleString() : ''}...`, pct);
 
-      const res  = await fetch(`/api/fetch?offset=${offset}&sort=${sort}&cond=${selectedCond}`);
+      const params = new URLSearchParams({
+        offset, seller, cond,
+        price_min: priceMin, price_max: priceMax,
+        hours
+      });
+      const res  = await fetch(`/api/fetch?${params}`);
       const data = await res.json();
 
-      if (!data.success) { showError(data.error || 'Bilinmeyen hata'); break; }
+      if (!data.success) { showError(s, data.error || 'Hata'); break; }
       if (!data.items || !data.items.length) break;
 
       totalAvail = data.total || Infinity;
-      allBooks.push(...data.items);
-      offset += pageSize;
+      state[s].books.push(...data.items);
+      offset += PAGE;
 
+      if (offset >= totalAvail) break;
       await new Promise(r => setTimeout(r, 200));
     }
 
-    allBooks = allBooks.slice(0, target);
-    renderStats();
-    renderTable();
-    renderActions();
-    document.getElementById('progressPanel').style.display = 'none';
-    ['statsPanel','actionsPanel','tablePanel'].forEach(id => document.getElementById(id).style.display = '');
+    renderStats(s);
+    renderTable(s);
+    renderActions(s);
+    document.getElementById(`${s}-progressPanel`).style.display = 'none';
+    ['statsPanel','actionsPanel','tablePanel'].forEach(id => document.getElementById(`${s}-${id}`).style.display = '');
   } catch(e) {
-    showError('Bağlantı hatası: ' + e.message);
-    document.getElementById('progressPanel').style.display = 'none';
+    showError(s, 'Bağlantı hatası: ' + e.message);
+    document.getElementById(`${s}-progressPanel`).style.display = 'none';
   }
 
-  fetching = false;
-  document.getElementById('fetchBtn').disabled = false;
-  document.getElementById('stopBtn').style.display = 'none';
+  state[s].fetching = false;
+  document.getElementById(`${s}-fetchBtn`).disabled = false;
+  document.getElementById(`${s}-stopBtn`).style.display = 'none';
 }
 
-function renderStats() {
-  const newB = filterBooks('new');
-  const vgB  = filterBooks('vg');
-  const avg  = allBooks.length ? (allBooks.reduce((s,b)=>s+b.price,0)/allBooks.length).toFixed(2) : 0;
-  document.getElementById('sTot').textContent  = allBooks.length.toLocaleString();
-  document.getElementById('sISBN').textContent = allBooks.filter(b=>b.isbn).length.toLocaleString();
-  document.getElementById('sNew').textContent  = newB.length.toLocaleString();
-  document.getElementById('sVG').textContent   = vgB.length.toLocaleString();
-  document.getElementById('sAvg').textContent  = '$' + avg;
+function renderStats(s) {
+  const books = state[s].books;
+  const newC = books.filter(b => (b.condition||'').toLowerCase().includes('new') && !(b.condition||'').toLowerCase().includes('like')).length;
+  const lnC  = books.filter(b => (b.condition||'').toLowerCase().includes('like')).length;
+  const vgC  = books.filter(b => (b.condition||'').toLowerCase().includes('very good') || (b.condition||'').toLowerCase().includes('good') && !(b.condition||'').toLowerCase().includes('very')).length;
+  const avg  = books.length ? (books.reduce((x,b)=>x+b.price,0)/books.length).toFixed(2) : 0;
+
+  document.getElementById(`${s}-sTot`).textContent  = books.length.toLocaleString();
+  document.getElementById(`${s}-sISBN`).textContent = books.filter(b=>b.isbn).length.toLocaleString();
+  document.getElementById(`${s}-sAvg`).textContent  = '$' + avg;
+
+  if (s === 'br') {
+    document.getElementById('br-sNew').textContent = newC.toLocaleString();
+    document.getElementById('br-sVG').textContent  = vgC.toLocaleString();
+  } else {
+    document.getElementById('bw-sLN').textContent = lnC.toLocaleString();
+    document.getElementById('bw-sVG').textContent  = vgC.toLocaleString();
+  }
 }
 
-function renderActions() {
-  const hasNew  = filterBooks('new').length > 0;
-  const hasVG   = filterBooks('vg').length  > 0;
-  document.getElementById('btnNew').style.display     = hasNew ? '' : 'none';
-  document.getElementById('btnVG').style.display      = hasVG  ? '' : 'none';
-  document.getElementById('btnAll').style.display     = (hasNew && hasVG) ? '' : 'none';
-  document.getElementById('btnISBNNew').style.display = hasNew ? '' : 'none';
-  document.getElementById('btnISBNVG').style.display  = hasVG  ? '' : 'none';
+function renderActions(s) {
+  const books = state[s].books;
+  const hasNew = books.some(b => (b.condition||'').toLowerCase().includes('new') && !(b.condition||'').toLowerCase().includes('like'));
+  const hasVG  = books.some(b => (b.condition||'').toLowerCase().includes('very good'));
+  if (s === 'br') {
+    const bnNew = document.getElementById('br-btnISBNNew');
+    const bnVG  = document.getElementById('br-btnISBNVG');
+    if (bnNew) bnNew.style.display = hasNew ? '' : 'none';
+    if (bnVG)  bnVG.style.display  = hasVG  ? '' : 'none';
+  }
 }
 
-function renderTable() {
-  const tbody = document.getElementById('tableBody');
+function renderTable(s) {
+  const tbody = document.getElementById(`${s}-tableBody`);
   tbody.innerHTML = '';
-  if (!allBooks.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Kitap bulunamadı</td></tr>';
-    return;
-  }
-  allBooks.forEach((b, i) => {
-    const newItem = isNew(b.condition);
+  const books = state[s].books;
+  if (!books.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Kitap bulunamadı</td></tr>'; return; }
+  books.forEach((b, i) => {
+    const bc = badgeClass(b.condition);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="color:#444;font-size:11px;">${i+1}</td>
-      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;" title="${(b.title||'').replace(/"/g,'&quot;')}">${b.title||''}</td>
-      <td class="isbn">${b.isbn || '<span style="color:#333">—</span>'}</td>
+      <td style="color:#444;font-size:10px;">${i+1}</td>
+      <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(b.title||'').replace(/"/g,'&quot;')}">${b.title||''}</td>
+      <td class="isbn">${b.isbn||'<span style="color:#333">—</span>'}</td>
       <td class="price">$${(b.price||0).toFixed(2)}</td>
-      <td><span class="badge ${newItem?'badge-new':'badge-vg'}">${b.condition||'-'}</span></td>
-      <td style="font-size:11px;color:#666;">${b.date||''}</td>
-      <td><a class="link-out" href="${b.url||'#'}" target="_blank">↗ eBay</a></td>
+      <td><span class="badge ${bc}">${b.condition||'-'}</span></td>
+      <td style="font-size:10px;color:#666;">${b.date||''}</td>
+      <td><a class="link-out" href="${b.url||'#'}" target="_blank">↗</a></td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-function exportXLSX(type) {
-  const books = filterBooks(type);
+function filterBooks(s, type) {
+  const books = state[s].books;
+  if (type === 'new') return books.filter(b => (b.condition||'').toLowerCase().includes('new') && !(b.condition||'').toLowerCase().includes('like'));
+  if (type === 'vg')  return books.filter(b => (b.condition||'').toLowerCase().includes('very good'));
+  if (type === 'ln')  return books.filter(b => (b.condition||'').toLowerCase().includes('like'));
+  return books;
+}
+
+function exportXLSX(s, type) {
+  const books = filterBooks(s, type);
   if (!books.length) return;
-  const label = type==='new'?'New':type==='vg'?'VeryGood':'Tumu';
+  const storeName = s === 'br' ? 'BooksRun' : 'BetterWorldBooks';
   const wb = XLSX.utils.book_new();
   const mkSheet = rows => {
-    const data = [['#','Başlık','ISBN','Fiyat ($)','Kondisyon','Eklenme Tarihi','eBay Linki']];
-    rows.forEach((b,i) => data.push([i+1,b.title,b.isbn||'',b.price,b.condition,b.date,b.url]));
+    const data = [['#','Başlık','ISBN','Fiyat ($)','Kondisyon','Tarih','eBay Linki']];
+    rows.forEach((b,i) => data.push([i+1, b.title, b.isbn||'', b.price, b.condition, b.date, b.url]));
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws['!cols'] = [{wch:5},{wch:52},{wch:14},{wch:10},{wch:14},{wch:14},{wch:55}];
     return ws;
   };
-  XLSX.utils.book_append_sheet(wb, mkSheet(books), label==='Tumu'?'Tümü':label);
-  if (type==='all') {
-    XLSX.utils.book_append_sheet(wb, mkSheet(filterBooks('new')), 'New');
-    XLSX.utils.book_append_sheet(wb, mkSheet(filterBooks('vg')), 'Very Good');
-  }
-  const s2 = XLSX.utils.aoa_to_sheet([
+  XLSX.utils.book_append_sheet(wb, mkSheet(books), storeName);
+  const summary = [
+    ['Mağaza', storeName],
     ['Rapor Tarihi', new Date().toLocaleDateString('tr-TR')],
     ['Toplam', books.length],
     ["ISBN'li", books.filter(b=>b.isbn).length],
-    ['New', filterBooks('new').length],
-    ['Very Good', filterBooks('vg').length],
-    ['Ort. Fiyat ($)', +(books.reduce((s,b)=>s+b.price,0)/books.length).toFixed(2)],
-  ]);
-  s2['!cols'] = [{wch:22},{wch:16}];
-  XLSX.utils.book_append_sheet(wb, s2, 'Özet');
-  XLSX.writeFile(wb, `booksrun_${label}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    ['Ort. Fiyat ($)', +(books.reduce((x,b)=>x+b.price,0)/books.length).toFixed(2)],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(summary);
+  ws2['!cols'] = [{wch:20},{wch:18}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Özet');
+  const tarih = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `${storeName}_${tarih}.xlsx`);
 }
 
-function copyISBN(type) {
-  const books = filterBooks(type);
+function copyISBN(s, type) {
+  const books = filterBooks(s, type);
   const isbns = books.filter(b=>b.isbn).map(b=>b.isbn).join('\n');
   navigator.clipboard.writeText(isbns).then(() => alert(`✅ ${books.filter(b=>b.isbn).length} ISBN kopyalandı!`));
 }
