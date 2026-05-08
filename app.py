@@ -2,33 +2,59 @@ from flask import Flask, jsonify, request, send_from_directory
 import requests
 import re
 import os
+import time
 from datetime import datetime, timezone, timedelta
 
 app = Flask(__name__, static_folder='static')
 
-OAUTH_TOKEN = 'v^1.1#i^1#r^0#p^1#I^3#f^0#t^H4sIAAAAAAAA/+VYe2wURRjv9QHyaA3BUCDSXJeHEXJ7s7f36tK7eG2BHlx7pXfUtpHA3O5su3Rvd9mZoz2i4WgC8hACqIkhEMAiIDERowkxEJDqHyJR/4EgiQZDADUxvv5RIjHOXku5VgJIj9jE++ey33zzzff7zfeYGZAZN2H+5vrNv5faxhcezIBMoc3GTQITxpUsKCsqnFlSAHIUbAczczLFvUXfV2OYVA2hGWFD1zCy9yRVDQtZYYBJmZqgQ6xgQYNJhAUiCrFQQ0RwsUAwTJ3ooq4y9nBdgPF4OJdH9vhEj8vt9/NVVKrdsRnXAwzvhX4Zyj7gATLw+3g6jnEKhTVMoEYCjAu4vA7gcQB/nOME4BN4wPJebztjb0EmVnSNqrCACWbdFbJzzRxf7+8qxBiZhBphguHQ4lg0FK5b1BivdubYCg7yECOQpPDwr1pdQvYWqKbQ/ZfBWW0hlhJFhDHjDA6sMNyoELrjzCO4n6XaD/yUaI/M+3nZJ1Ul8kLlYt1MQnJ/PyyJIjnkrKqANKKQ9IMYpWwk1iCRDH41UhPhOrv1tzwFVUVWkBlgFtWE2kJNTUwwllRUhCMRxxJlHSLQ7HA0Ndc5AALeRJVLlh3A5QfQJyYGFxqwNkjziJVqdU1SLNKwvVEnNYh6jYZzAwRPDjdUKapFzZBMLI9y9fghDrl2a1MHdjFFOjVrX1GSEmHPfj54B4ZmE2IqiRRBQxZGDmQpCjDQMBSJGTmYjcXB8OnBAaaTEENwOru7u9luntXNDqcLAM7Z2hCJiZ0oCRmqa+X6gL7y4AkOJQtFRHQmVgSSNqgvPTRWqQNaBxOk2e4HYJD34W4FR0r/IcjB7ByeEfnKEK+bh7LMcxwQ3a6EnJdiExwMUqflB0rAtCMJzS5EDBWKyCHSOEslkalIAu+RXbxfRg7JWyU73FU0bBMeyevgZIQAQomEWOX/PyXKw4Z6DIkmInmJ9bzFeYJPuzvQ+lCbyx2Ltjrj0RX10db6htZlzxudqMdYu1SH8eVSQ7ixqS3wsNlwT/C1qkKZidP180GAlev5I6FexwRJo4IXE3UDNemqIqbH1gbzptQETZKOIVWlglGBDBlGOD+1Om/w/mWZeDTc+etR/1F/uicqbIXs2EJlzcfUADQU1upArKgnnVau65AePyzxqqzX9nsqjlByUhltWCJiaV+SElDsYk0EJV1T06PiTaEn3zHFGsU5QIIiDRxZ2SwTLF4nUsRYT1EOMBu1TnBxvQtptB8SU1dVZLZwo64HyWSKwISKxlphyEOCKHCMNWvO5/PTk5fbMzpcYrYVrxprJc0q5cW9NvjYy3kzgmpybGE3TF1KidYZ9TFcOZzDH0CCBdkf12vrB722M4U2G6gGc7nZoHJc0YrioskzsUIQq0CZxUqHRu/1JmK7UNqAilk4teCzS1caK04tPbb1enlm0xznnoKynPeXgyvB9KEXmAlF3KSc5xjw9N2REu7J8lKXF3iAn15hfDxoB7PvjhZz04qf6k9vfHFp5YfnP3iZVB6Zai85y4S3g9IhJZutpIAGS0G6mm+7mPrt1HKud0ZjX/d2z+4T59de33CmsLn9/d07lcPqgs9PzplX9k7kp7bVVzZeqRA+CqRXv/W2e5oUvrFrmloU0uat2Xqzs+bor7cSZktVOUmttO/6c2r1rEOHdjrf/ONHR/l36+afLOt/Sbj2yzfXtm/b27Dr1slvybFtGbUhtGxfNX7uS3Z/+StLvu57d29rYEv/ex/3/1WzcrK8pvtm0YUf5h6e13f7hleKLNywI7Lq9kb/1SlfTF//iXHu7OkfTjt+2+/Ov/C+LrNFZmLkRmrI9sOH3ih7o3zW/apFT/jTaVTjhw9MbCXfwOZ0cDfGRMAAA=='
+# Ortam değişkenlerinden al
+CLIENT_ID     = os.environ.get('EBAY_CLIENT_ID', 'SmilesLL-Givetarg-PRD-0e06b92ff-0280a7cb')
+CLIENT_SECRET = os.environ.get('EBAY_CLIENT_SECRET', 'PRD-e06b92ff01b6-ef2d-4518-8381-76d6')
 
-BROWSE_URL  = 'https://api.ebay.com/buy/browse/v1/item_summary/search'
-ITEM_URL    = 'https://api.ebay.com/buy/browse/v1/item/'
+BROWSE_URL = 'https://api.ebay.com/buy/browse/v1/item_summary/search'
+TOKEN_URL  = 'https://api.ebay.com/identity/v1/oauth2/token'
 
-@app.route('/')
-def index():
-    return send_from_directory('static', 'index.html')
+# Token cache
+_token_cache = {'token': None, 'expires_at': 0}
+
+def get_token():
+    """Token yoksa veya süresi dolduysa otomatik yenile."""
+    now = time.time()
+    if _token_cache['token'] and now < _token_cache['expires_at'] - 60:
+        return _token_cache['token']
+
+    resp = requests.post(
+        TOKEN_URL,
+        auth=(CLIENT_ID, CLIENT_SECRET),
+        data={'grant_type': 'client_credentials', 'scope': 'https://api.ebay.com/oauth/api_scope'},
+        headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        timeout=10
+    )
+    data = resp.json()
+    if 'access_token' not in data:
+        raise Exception(f"Token alınamadı: {data.get('error_description', str(data))}")
+
+    _token_cache['token']      = data['access_token']
+    _token_cache['expires_at'] = now + int(data.get('expires_in', 7200))
+    return _token_cache['token']
+
+def get_headers():
+    return {
+        'Authorization': f'Bearer {get_token()}',
+        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
+        'Content-Type': 'application/json'
+    }
 
 def extract_isbn(text):
-    """ISBN-13 veya ISBN-10 çıkar, yoksa boş döndür."""
-    m = re.search(r'\b(97[89][\d]{10}|\d{9}[\dX])\b', text, re.I)
+    m = re.search(r'\b(97[89]\d{10}|\d{9}[\dX])\b', text, re.I)
     if m:
         isbn = m.group(1).upper()
         return isbn.zfill(10) if len(isbn) < 10 else isbn
     return ''
 
-def get_headers():
-    return {
-        'Authorization': f'Bearer {OAUTH_TOKEN}',
-        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-        'Content-Type': 'application/json'
-    }
+@app.route('/')
+def index():
+    return send_from_directory('static', 'index.html')
 
 @app.route('/api/fetch')
 def fetch_books():
@@ -37,9 +63,8 @@ def fetch_books():
     cond      = request.args.get('cond', 'both')
     price_min = request.args.get('price_min', '').strip()
     price_max = request.args.get('price_max', '').strip()
-    hours     = request.args.get('hours', '', type=str).strip()
+    hours     = request.args.get('hours', '').strip()
 
-    # Kondisyon ID'leri: 1000=New, 1750=Like New, 2750=Very Good, 3000=Good
     cond_map = {
         'new':     ['1000'],
         'vg':      ['2750'],
@@ -49,7 +74,6 @@ def fetch_books():
     }
     cond_ids = cond_map.get(cond, [])
 
-    # Filter string — fiyat eBay formatı: price:[min..max],priceCurrency:USD
     filter_parts = [f'sellers{{{seller}}}']
     if cond_ids:
         filter_parts.append('conditionIds:{' + '|'.join(cond_ids) + '}')
@@ -91,30 +115,21 @@ def fetch_books():
             date      = (item.get('itemCreationDate') or '')[:10]
             item_id   = item.get('itemId', '')
 
-            # ISBN: önce başlıktan dene
             isbn = extract_isbn(title)
-
-            # Başlıkta yoksa additionalImages veya localizedAspects'ten dene
             if not isbn:
                 for asp in item.get('localizedAspects', []):
                     if 'isbn' in asp.get('name', '').lower():
                         isbn = extract_isbn(asp.get('value', ''))
                         break
 
-            # Fiyat filtresi — API bazen dışarıdan gelenleri geçirebilir, server-side kontrol
-            if price_min and price < float(price_min):
-                continue
-            if price_max and price > float(price_max):
-                continue
+            # Server-side fiyat kontrolü
+            if price_min and price < float(price_min): continue
+            if price_max and price > float(price_max): continue
 
             results.append({
-                'title':     title,
-                'isbn':      isbn,
-                'price':     price,
-                'condition': condition,
-                'url':       url,
-                'date':      date,
-                'item_id':   item_id
+                'title': title, 'isbn': isbn, 'price': price,
+                'condition': condition, 'url': url,
+                'date': date, 'item_id': item_id
             })
 
         return jsonify({'success': True, 'items': results, 'total': total, 'offset': offset})
@@ -125,25 +140,19 @@ def fetch_books():
 
 @app.route('/api/item_isbn')
 def item_isbn():
-    """Tek bir item'ın detaylarından ISBN çeker (arka planda)."""
     item_id = request.args.get('item_id', '')
     if not item_id:
         return jsonify({'isbn': ''})
     try:
         resp = requests.get(
-            f'{ITEM_URL}{item_id}',
-            headers=get_headers(),
-            timeout=10
+            f'https://api.ebay.com/buy/browse/v1/item/{item_id}',
+            headers=get_headers(), timeout=10
         )
         data = resp.json()
-        # localizedAspects içinde ISBN ara
         for asp in data.get('localizedAspects', []):
             if 'isbn' in asp.get('name', '').lower():
                 return jsonify({'isbn': extract_isbn(asp.get('value', ''))})
-        # description içinde ara
-        desc = data.get('description', '')
-        isbn = extract_isbn(desc)
-        return jsonify({'isbn': isbn})
+        return jsonify({'isbn': extract_isbn(data.get('description', ''))})
     except:
         return jsonify({'isbn': ''})
 
