@@ -77,15 +77,11 @@ def fetch_books():
     filter_parts = [f'sellers{{{seller}}}']
     if cond_ids:
         filter_parts.append('conditionIds:{' + '|'.join(cond_ids) + '}')
-    if price_min or price_max:
-        lo = price_min if price_min else '0'
-        hi = price_max if price_max else '99999'
-        filter_parts.append(f'price:[{lo}..{hi}]')
-        filter_parts.append('priceCurrency:USD')
     if hours and hours != '0':
         dt = datetime.now(timezone.utc) - timedelta(hours=int(hours))
         filter_parts.append(f'itemStartDate:[{dt.strftime("%Y-%m-%dT%H:%M:%S.000Z")}]')
 
+    # Fiyat filtresi ayrı parametre olarak gönderilmeli
     params = {
         'category_ids': '267',
         'filter':       ','.join(filter_parts),
@@ -94,6 +90,11 @@ def fetch_books():
         'offset':       offset,
         'fieldgroups':  'STANDARD'
     }
+
+    if price_min or price_max:
+        lo = price_min if price_min else '0'
+        hi = price_max if price_max else '99999'
+        params['filter'] += f',price:[{lo}..{hi}],priceCurrency:USD'
 
     try:
         resp = requests.get(BROWSE_URL, params=params, headers=get_headers(), timeout=15)
