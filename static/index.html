@@ -394,18 +394,44 @@ function renderTable(s) {
   if (!books.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Kitap bulunamadı</td></tr>'; return; }
   books.forEach((b, i) => {
     const bc = badgeClass(b.condition);
+    const isbnId = `isbn-${s}-${i}`;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="color:#444;font-size:10px;">${i+1}</td>
       <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(b.title||'').replace(/"/g,'&quot;')}">${b.title||''}</td>
-      <td class="isbn">${b.isbn||'<span style="color:#333">—</span>'}</td>
+      <td class="isbn" id="${isbnId}">${b.isbn||'<span style="color:#555;font-size:10px;">yükleniyor...</span>'}</td>
       <td class="price">$${(b.price||0).toFixed(2)}</td>
       <td><span class="badge ${bc}">${b.condition||'-'}</span></td>
       <td style="font-size:10px;color:#666;">${b.date||''}</td>
       <td><a class="link-out" href="${b.url||'#'}" target="_blank">↗</a></td>
     `;
     tbody.appendChild(tr);
+
+    // ISBN yoksa arka planda item detayından çek
+    if (!b.isbn && b.item_id) {
+      fetchISBN(b, isbnId, s, i);
+    } else if (!b.isbn) {
+      document.getElementById(isbnId).innerHTML = '<span style="color:#333">—</span>';
+    }
   });
+}
+
+async function fetchISBN(book, cellId, s, idx) {
+  try {
+    const res  = await fetch(`/api/item_isbn?item_id=${encodeURIComponent(book.item_id)}`);
+    const data = await res.json();
+    const cell = document.getElementById(cellId);
+    if (!cell) return;
+    if (data.isbn) {
+      cell.textContent = data.isbn;
+      state[s].books[idx].isbn = data.isbn;
+    } else {
+      cell.innerHTML = '<span style="color:#333">—</span>';
+    }
+  } catch(e) {
+    const cell = document.getElementById(cellId);
+    if (cell) cell.innerHTML = '<span style="color:#333">—</span>';
+  }
 }
 
 function filterBooks(s, type) {
