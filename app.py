@@ -8,8 +8,8 @@ from datetime import datetime, timezone, timedelta
 app = Flask(__name__, static_folder='static')
 
 # Ortam değişkenlerinden al
-CLIENT_ID     = os.environ.get('EBAY_CLIENT_ID', 'SmilesLL-Givetarg-PRD-0e06b92ff-0280a7cb')
-CLIENT_SECRET = os.environ.get('EBAY_CLIENT_SECRET', 'PRD-e06b92ff01b6-ef2d-4518-8381-76d6')
+CLIENT_ID     = os.environ.get('EBAY_CLIENT_ID', 'mustafka-veriekme-PRD-3099fbf64-f8e9a4a6')
+CLIENT_SECRET = os.environ.get('EBAY_CLIENT_SECRET', 'PRD-099fbf647551-38b0-49a2-bd58-c4bf')
 
 BROWSE_URL = 'https://api.ebay.com/buy/browse/v1/item_summary/search'
 TOKEN_URL  = 'https://api.ebay.com/identity/v1/oauth2/token'
